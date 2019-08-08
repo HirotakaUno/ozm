@@ -20,11 +20,17 @@ import java.util.*
 import android.graphics.Bitmap
 import android.view.View
 import android.widget.ProgressBar
+import kotlinx.android.synthetic.main.activity_main.*
+import android.text.InputType
+import android.widget.EditText
+
+
 
 
 class MainActivity : AppCompatActivity() {
 
     val myApp: Context = this
+    var t_entrytime : String = ""
 
     internal inner class MyWebChromeClient : WebChromeClient() {
         override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
@@ -34,7 +40,10 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton(android.R.string.ok,
                     DialogInterface.OnClickListener { dialog, which -> result.confirm() })
                 .setNegativeButton(android.R.string.cancel,
-                    DialogInterface.OnClickListener { dialog, which -> result.cancel() })
+                    DialogInterface.OnClickListener { dialog, which ->
+                        progressBar2.setVisibility(View.INVISIBLE)
+                        result.cancel()
+                    })
                 .create()
                 .show()
             return true
@@ -45,6 +54,14 @@ class MainActivity : AppCompatActivity() {
     internal inner class  MyWebViewClient( progressBar : ProgressBar) :WebViewClient(){
         var progressBar : ProgressBar = progressBar
         override fun onPageFinished(view: WebView, url: String) {
+            val fuseaction = url.substring((url.indexOf("fuseaction=") + 11) )
+            if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
+                registration.text = "今日の日付へ"
+                temporary.visibility = View.VISIBLE
+            }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
+                registration.text = "登録"
+                temporary.visibility = View.GONE
+            }
             progressBar.setVisibility(View.INVISIBLE)
             super.onPageFinished(view, url)
         }
@@ -66,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         //webView.loadUrl("file:///android_asset/index.html")
         progressBar.setVisibility(View.VISIBLE)
         webView.loadUrl("https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt" )
+        registration.text = "今日の日付へ"
 
         registration.setOnClickListener {
 
@@ -77,6 +95,10 @@ class MainActivity : AppCompatActivity() {
             if( data_entrytime.isEmpty() || data_pcode.isEmpty() ){
                 Toast.makeText(this , "右上設定より出社時間とプロジェクトコードを設定してください。", Toast.LENGTH_LONG).show();
                 return@setOnClickListener
+            }
+
+            if(!this.t_entrytime.isEmpty()){
+                data_entrytime = t_entrytime
             }
 
             val date = Date()
@@ -107,6 +129,9 @@ class MainActivity : AppCompatActivity() {
             if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
                 webView.loadUrl("javascript:DataEdit('$edit_date');")
                 progressBar.setVisibility(View.VISIBLE)
+                temporary.visibility = View.GONE
+                registration.text = "登録"
+                this.t_entrytime = ""
             }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
                 webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('$data_entrytime');")
                 webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('$exit_time');")
@@ -118,8 +143,31 @@ class MainActivity : AppCompatActivity() {
                 webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$sum');")
                 webView.loadUrl("javascript:AsyncAutoCalc(true);")
                 progressBar.setVisibility(View.VISIBLE)
+                temporary.visibility = View.VISIBLE
+                registration.text = "今日の日付へ"
             }
         }
+
+        temporary.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("出社時間")
+            val input = EditText(this)
+
+            input.inputType = InputType.TYPE_DATETIME_VARIATION_TIME
+            builder.setView(input)
+            builder.setPositiveButton("OK") { dialog, which ->
+                this.t_entrytime = input.text.toString()
+                val edit_date = SimpleDateFormat("M").format(Date())
+                webView.loadUrl("javascript:DataEdit('$edit_date');")
+                progressBar.setVisibility(View.VISIBLE)
+                temporary.visibility = View.GONE
+                registration.text = "登録"
+            }
+            builder.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
+            builder.show()
+
+        }
+
     }
 
     //メニュー表示の為の関数
@@ -137,8 +185,9 @@ class MainActivity : AppCompatActivity() {
         when (item.getItemId()) {
             //作成ボタンを押したとき
             R.id.top -> {
-                var webView : WebView =  findViewById(R.id.webView) as WebView
                 webView.loadUrl("https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt" )
+                progressBar2.setVisibility(View.VISIBLE)
+                registration.text = "今日の日付へ"
                 return true
             }
             R.id.setting -> {

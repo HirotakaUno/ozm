@@ -6,4 +6,5 @@
     <string name="top">最初の画面</string>
     <string name="entrytime">出社時間</string>
     <string name="pcode">プロジェクトコード</string>
+    <string name="temporary">一時変更</string>
 </resources>
