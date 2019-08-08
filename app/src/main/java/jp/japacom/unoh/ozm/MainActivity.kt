@@ -58,9 +58,11 @@ class MainActivity : AppCompatActivity() {
             if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
                 registration.text = "今日の日付へ"
                 temporary.visibility = View.VISIBLE
+                holiday.visibility = View.GONE
             }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
                 registration.text = "登録"
                 temporary.visibility = View.GONE
+                holiday.visibility  = View.VISIBLE
             }
             progressBar.setVisibility(View.INVISIBLE)
             super.onPageFinished(view, url)
@@ -84,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         progressBar.setVisibility(View.VISIBLE)
         webView.loadUrl("https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt" )
         registration.text = "今日の日付へ"
+        holiday.visibility = View.GONE
 
         registration.setOnClickListener {
 
@@ -111,9 +114,6 @@ class MainActivity : AppCompatActivity() {
 
             // 差分の時間を算出します。
             val dayDiff = (dateTimeTo - dateTimeFrom) / (1000 * 60)
-//            println("現在時間 : " + date )
-//            println("出社時間 : " + entry_date.toString() )
-//            println("差分時間 : " + (dayDiff/60) + ":" + (dayDiff%60) )
 
             val edit_date = SimpleDateFormat("M").format(date)
             val exit_time = SimpleDateFormat("HH:mm").format(date)
@@ -129,8 +129,6 @@ class MainActivity : AppCompatActivity() {
             if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
                 webView.loadUrl("javascript:DataEdit('$edit_date');")
                 progressBar.setVisibility(View.VISIBLE)
-                temporary.visibility = View.GONE
-                registration.text = "登録"
                 this.t_entrytime = ""
             }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
                 webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('$data_entrytime');")
@@ -143,8 +141,6 @@ class MainActivity : AppCompatActivity() {
                 webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$sum');")
                 webView.loadUrl("javascript:AsyncAutoCalc(true);")
                 progressBar.setVisibility(View.VISIBLE)
-                temporary.visibility = View.VISIBLE
-                registration.text = "今日の日付へ"
             }
         }
 
@@ -160,12 +156,22 @@ class MainActivity : AppCompatActivity() {
                 val edit_date = SimpleDateFormat("M").format(Date())
                 webView.loadUrl("javascript:DataEdit('$edit_date');")
                 progressBar.setVisibility(View.VISIBLE)
-                temporary.visibility = View.GONE
-                registration.text = "登録"
             }
             builder.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
             builder.show()
 
+        }
+
+        holiday.setOnClickListener {
+            webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('');")
+            webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('');")
+            webView.loadUrl("javascript:jQuery('#tmp_JIYUU_SYUJITU').val('2');")
+            webView.loadUrl("javascript:updateDisplay(jQuery('#tmp_JIYUU_SYUJITU').get(0) );")
+            webView.loadUrl("javascript:jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)' ).val('38300003-00');")
+            webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
+            webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('08:00');")
+            webView.loadUrl("javascript:AsyncAutoCalc(true);")
+            progressBar.setVisibility(View.VISIBLE)
         }
 
     }
@@ -187,7 +193,6 @@ class MainActivity : AppCompatActivity() {
             R.id.top -> {
                 webView.loadUrl("https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt" )
                 progressBar2.setVisibility(View.VISIBLE)
-                registration.text = "今日の日付へ"
                 return true
             }
             R.id.setting -> {
