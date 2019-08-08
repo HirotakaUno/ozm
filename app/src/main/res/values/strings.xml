@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OZM</string>
+    <string name="registration">登録</string>
+    <string name="setting">設定</string>
+    <string name="save">保存</string>
+    <string name="top">最初の画面</string>
+    <string name="entrytime">出社時間</string>
+    <string name="pcode">プロジェクトコード</string>
+</resources>
