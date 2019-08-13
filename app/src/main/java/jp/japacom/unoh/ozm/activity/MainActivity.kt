@@ -1,11 +1,10 @@
-package jp.japacom.unoh.ozm
+package jp.japacom.unoh.ozm.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
-import android.R.string.cancel
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -17,24 +16,21 @@ import android.webkit.WebChromeClient
 import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.*
-import android.graphics.Bitmap
 import android.view.View
 import android.widget.ProgressBar
 import kotlinx.android.synthetic.main.activity_main.*
 import android.text.InputType
 import android.widget.EditText
-
-
+import jp.japacom.unoh.ozm.R
 
 
 class MainActivity : AppCompatActivity() {
 
-    val myApp: Context = this
     var t_entrytime : String = ""
 
     internal inner class MyWebChromeClient : WebChromeClient() {
         override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
-            AlertDialog.Builder(myApp)
+            AlertDialog.Builder(this@MainActivity)
                 .setTitle("OZM")
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok,
@@ -51,8 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    internal inner class  MyWebViewClient( progressBar : ProgressBar) :WebViewClient(){
-        var progressBar : ProgressBar = progressBar
+    internal inner class  MyWebViewClient() :WebViewClient(){
         override fun onPageFinished(view: WebView, url: String) {
             val fuseaction = url.substring((url.indexOf("fuseaction=") + 11) )
             if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
@@ -64,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 temporary.visibility = View.GONE
                 holiday.visibility  = View.VISIBLE
             }
-            progressBar.setVisibility(View.INVISIBLE)
+            progressBar2.setVisibility(View.INVISIBLE)
             super.onPageFinished(view, url)
         }
     }
@@ -73,18 +68,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var webView : WebView =  findViewById(R.id.webView) as WebView
-        var registration : Button = findViewById(R.id.registration) as Button
-
-        var progressBar : ProgressBar = findViewById(R.id.progressBar2) as ProgressBar
-        progressBar.setVisibility(View.INVISIBLE)
-
-        webView.setWebViewClient(MyWebViewClient(progressBar))
+        webView.setWebViewClient(MyWebViewClient())
         webView.setWebChromeClient(MyWebChromeClient())
         webView.getSettings().setJavaScriptEnabled(true)
-        //webView.loadUrl("file:///android_asset/index.html")
-        progressBar.setVisibility(View.VISIBLE)
-        webView.loadUrl("https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt" )
+        webView.loadUrl(TOP_URL)
+
         registration.text = "今日の日付へ"
         holiday.visibility = View.GONE
 
@@ -128,19 +116,18 @@ class MainActivity : AppCompatActivity() {
             /* web ブラウザに指示*/
             if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
                 webView.loadUrl("javascript:DataEdit('$edit_date');")
-                progressBar.setVisibility(View.VISIBLE)
+                progressBar2.setVisibility(View.VISIBLE)
                 this.t_entrytime = ""
             }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
                 webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('$data_entrytime');")
                 webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('$exit_time');")
                 webView.loadUrl("javascript:jQuery('#db_ZANGYOU_JIKAN5').val('$sum');")
                 webView.loadUrl("javascript:jQuery('#db_SOU_ROUDOU').val('$sum');")
-//            webView.loadUrl("javascript:onClick_CopyYesterday();")
                 webView.loadUrl("javascript:jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)' ).val('$data_pcode');")
                 webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
                 webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$sum');")
                 webView.loadUrl("javascript:AsyncAutoCalc(true);")
-                progressBar.setVisibility(View.VISIBLE)
+                progressBar2.setVisibility(View.VISIBLE)
             }
         }
 
@@ -155,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                 this.t_entrytime = input.text.toString()
                 val edit_date = SimpleDateFormat("M").format(Date())
                 webView.loadUrl("javascript:DataEdit('$edit_date');")
-                progressBar.setVisibility(View.VISIBLE)
+                progressBar2.setVisibility(View.VISIBLE)
             }
             builder.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
             builder.show()
@@ -171,7 +158,7 @@ class MainActivity : AppCompatActivity() {
             webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
             webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('08:00');")
             webView.loadUrl("javascript:AsyncAutoCalc(true);")
-            progressBar.setVisibility(View.VISIBLE)
+            progressBar2.setVisibility(View.VISIBLE)
         }
 
     }
@@ -191,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         when (item.getItemId()) {
             //作成ボタンを押したとき
             R.id.top -> {
-                webView.loadUrl("https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt" )
+                webView.loadUrl(TOP_URL)
                 progressBar2.setVisibility(View.VISIBLE)
                 return true
             }
@@ -202,5 +189,9 @@ class MainActivity : AppCompatActivity() {
             }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    companion object{
+        const val TOP_URL : String = "https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt"
     }
 }
