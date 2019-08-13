@@ -34,9 +34,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" android:id="@+id/holiday" android:layout_weight="1"/>
         <Button
-                android:text="@string/temporary"
+                android:text="@string/editday"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" android:id="@+id/temporary" android:layout_weight="1"/>
+                android:layout_height="wrap_content" android:id="@+id/editday" android:layout_weight="1"/>
         <Button
                 android:text="@string/registration"
                 android:layout_width="0dp"

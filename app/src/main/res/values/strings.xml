@@ -8,4 +8,6 @@
     <string name="pcode">プロジェクトコード</string>
     <string name="temporary">一時変更</string>
     <string name="holiday">休暇登録</string>
+    <string name="editday">登録日付へ</string>
+    <string name="setting_notice">右上設定より出社時間とプロジェクトコードを設定してください。</string>
 </resources>
