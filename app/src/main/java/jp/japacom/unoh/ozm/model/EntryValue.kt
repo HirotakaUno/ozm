@@ -22,7 +22,7 @@ class EntryValue {
     
     fun workTime(): String {
         // 差分の時間を算出します。
-        val dateTimeTo = this.entry_time.getTime()
+        val dateTimeTo = this.exit_time.getTime()
         val dateTimeFrom = this.entry_time.getTime()
         val dayDiff = (dateTimeTo - dateTimeFrom) / (1000 * 60)
         return ( ( dayDiff / 60 ) - 1 ).toString() + ":" + (dayDiff%60)

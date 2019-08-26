@@ -6,7 +6,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.res.Resources
 import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
@@ -51,10 +50,12 @@ class MainActivity : AppCompatActivity() {
                 registration.visibility = View.GONE
                 editday.visibility = View.VISIBLE
                 holiday.visibility = View.GONE
+                edtibutton.show()
             }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
                 registration.visibility = View.VISIBLE
                 editday.visibility = View.GONE
                 holiday.visibility  = View.VISIBLE
+                edtibutton.hide()
             }
             progressBar2.visibility = View.INVISIBLE
             super.onPageFinished(view, url)
@@ -65,19 +66,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var setting = Setting(this)
-        if(setting.entry_time.isEmpty() || setting.project_code.isEmpty()){
-            Toast.makeText(this , resources.getString(R.string.setting_notice), Toast.LENGTH_LONG).show()
-            this.entry_value.date = Date()
-            this.entry_value.entry_time = stringToDate( Date() , "08:30")
-            this.entry_value.exit_time  = Date()
-            this.entry_value.project_code = DEFALUT_PROJECT_CODE
-        }else{
-            this.entry_value.date = Date()
-            this.entry_value.entry_time = stringToDate( Date() , setting.entry_time)
-            this.entry_value.exit_time = Date()
-            this.entry_value.project_code = setting.project_code
-        }
+        init()
 
         webView.webViewClient = MyWebViewClient()
         webView.webChromeClient = MyWebChromeClient()
@@ -92,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             var edit_day = this.entry_value.editDay()
             webView.loadUrl("javascript:DataEdit('$edit_day');")
             progressBar2.visibility = View.VISIBLE
+            edtibutton.hide()
         }
 
         /* 登録ボタン */
@@ -110,7 +100,6 @@ class MainActivity : AppCompatActivity() {
             webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$work_time');")
             webView.loadUrl("javascript:AsyncAutoCalc(true);")
             progressBar2.visibility = View.VISIBLE
-
         }
 
         /* 休暇登録ボタン */
@@ -126,6 +115,27 @@ class MainActivity : AppCompatActivity() {
             progressBar2.visibility = View.VISIBLE
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        init()
+    }
+
+    fun init(){
+        var setting = Setting(this)
+        if(setting.entry_time.isEmpty() || setting.project_code.isEmpty()){
+            Toast.makeText(this , resources.getString(R.string.setting_notice), Toast.LENGTH_LONG).show()
+            this.entry_value.date = Date()
+            this.entry_value.entry_time = stringToDate( Date() , "08:30")
+            this.entry_value.exit_time  = Date()
+            this.entry_value.project_code = DEFALUT_PROJECT_CODE
+        }else{
+            this.entry_value.date = Date()
+            this.entry_value.entry_time = stringToDate( Date() , setting.entry_time)
+            this.entry_value.exit_time = Date()
+            this.entry_value.project_code = setting.project_code
+        }
     }
 
     //メニュー表示の為の関数
