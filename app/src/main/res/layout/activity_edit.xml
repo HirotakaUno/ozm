@@ -17,6 +17,16 @@
             app:layout_constraintBottom_toTopOf="@+id/next">
         <TextView
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView4" android:text="@string/entrydate"
+                android:textSize="24sp"/>
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:ems="10"
+                android:id="@+id/entrydate" android:hint="@string/entrydate" android:textSize="18sp"/>
+        <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView" android:text="@string/entrytime"
                 android:textSize="24sp"/>
         <EditText

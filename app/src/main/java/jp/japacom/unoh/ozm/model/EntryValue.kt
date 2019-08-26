@@ -14,6 +14,8 @@ class EntryValue {
     var project_code : String = ""
 
     @SuppressLint("SimpleDateFormat")
+    fun editDate(): String = SimpleDateFormat("MM/dd" ).format( this.date ).toString()
+    @SuppressLint("SimpleDateFormat")
     fun editDay(): String = SimpleDateFormat("d" ).format( this.date ).toString()
     @SuppressLint("SimpleDateFormat")
     fun entryTime(): String = SimpleDateFormat("kk:mm" ).format( this.entry_time ).toString()

@@ -17,8 +17,10 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import jp.japacom.unoh.ozm.R
 import jp.japacom.unoh.ozm.common.*
+import jp.japacom.unoh.ozm.model.Edit
 import jp.japacom.unoh.ozm.model.EntryValue
 import jp.japacom.unoh.ozm.model.Setting
+import java.text.SimpleDateFormat
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,6 +68,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var edit : Edit = Edit(this )
+        edit.reset()
+
         init()
 
         webView.webViewClient = MyWebViewClient()
@@ -100,6 +105,7 @@ class MainActivity : AppCompatActivity() {
             webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$work_time');")
             webView.loadUrl("javascript:AsyncAutoCalc(true);")
             progressBar2.visibility = View.VISIBLE
+            edit.reset()
         }
 
         /* 休暇登録ボタン */
@@ -113,6 +119,12 @@ class MainActivity : AppCompatActivity() {
             webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('08:00');")
             webView.loadUrl("javascript:AsyncAutoCalc(true);")
             progressBar2.visibility = View.VISIBLE
+            edit.reset()
+        }
+
+        edtibutton.setOnClickListener {
+            val intent: Intent = Intent(this, EditActivity::class.java)
+            startActivity(intent)
         }
 
     }
@@ -123,8 +135,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun init(){
+        var edit : Edit = Edit(this )
         var setting = Setting(this)
-        if(setting.entry_time.isEmpty() || setting.project_code.isEmpty()){
+
+        if(!edit.edit_date.isEmpty() && !edit.entry_time.isEmpty() && !edit.exit_time.isEmpty() && !edit.project_code.isEmpty() ){
+            Toast.makeText(this , "入力値をロードします。", Toast.LENGTH_LONG).show()
+            this.entry_value.date = SimpleDateFormat("yyyy/MM/dd").parse( edit.edit_date )
+            this.entry_value.entry_time = stringToDate( this.entry_value.date, edit.entry_time )
+            this.entry_value.exit_time  = stringToDate( this.entry_value.date, edit.exit_time )
+            this.entry_value.project_code = edit.project_code
+        }else if(setting.entry_time.isEmpty() || setting.project_code.isEmpty()){
             Toast.makeText(this , resources.getString(R.string.setting_notice), Toast.LENGTH_LONG).show()
             this.entry_value.date = Date()
             this.entry_value.entry_time = stringToDate( Date() , "08:30")
@@ -136,6 +156,8 @@ class MainActivity : AppCompatActivity() {
             this.entry_value.exit_time = Date()
             this.entry_value.project_code = setting.project_code
         }
+
+        editday.text = "登録日付へ (" + this.entry_value.editDate() + ") "
     }
 
     //メニュー表示の為の関数
@@ -150,11 +172,15 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             //作成ボタンを押したとき
             R.id.top -> {
+                var edit : Edit = Edit(this )
+                edit.reset()
                 webView.loadUrl(TOP_URL)
                 progressBar2.visibility = View.VISIBLE
                 true
             }
             R.id.setting -> {
+                var edit : Edit = Edit(this )
+                edit.reset()
                 val intent: Intent = Intent(this, SettingActivity::class.java)
                 startActivity(intent)
                 true

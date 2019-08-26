@@ -11,5 +11,6 @@
     <string name="editday">登録日付へ</string>
     <string name="setting_notice">右上設定より出社時間とプロジェクトコードを設定してください。</string>
     <string name="exittime">退社時間</string>
-    <string name="next">次へ</string>
+    <string name="next">登録画面へ</string>
+    <string name="entrydate">日付</string>
 </resources>

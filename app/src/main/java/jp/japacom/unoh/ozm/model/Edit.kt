@@ -21,8 +21,17 @@ class Edit(context: Context){
         val editor = data.edit()
         editor.putString(EDIT_DATE, this.edit_date)
         editor.putString(EDIT_ENTYR_TIME, this.entry_time)
-        editor.putString(EDIT_EXIT_TIME, this.project_code)
+        editor.putString(EDIT_EXIT_TIME, this.exit_time)
         editor.putString(EDIT_PROJECT_CODE, this.project_code)
+        editor.apply()
+    }
+
+    fun reset(){
+        val editor = data.edit()
+        editor.putString(EDIT_DATE, "")
+        editor.putString(EDIT_ENTYR_TIME, "")
+        editor.putString(EDIT_EXIT_TIME, "")
+        editor.putString(EDIT_PROJECT_CODE, "")
         editor.apply()
     }
 
