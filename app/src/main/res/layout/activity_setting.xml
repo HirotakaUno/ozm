@@ -26,6 +26,16 @@
                 android:ems="10"
                 android:id="@+id/entrytime" android:hint="@string/entrytime" android:textSize="18sp"/>
         <TextView
+                android:text="@string/exittime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView3" android:textSize="24sp"/>
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="time"
+                android:ems="10"
+                android:id="@+id/exittime" android:hint="@string/exittime"/>
+        <TextView
                 android:text="@string/pcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView2" android:textSize="24sp"/>

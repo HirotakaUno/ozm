@@ -13,10 +13,8 @@ class EntryValue {
         get() = this.timeQuarter(field)
     var project_code : String = ""
 
-
-
     @SuppressLint("SimpleDateFormat")
-    fun editDay(): String = SimpleDateFormat("M" ).format( this.date ).toString()
+    fun editDay(): String = SimpleDateFormat("d" ).format( this.date ).toString()
     @SuppressLint("SimpleDateFormat")
     fun entryTime(): String = SimpleDateFormat("kk:mm" ).format( this.entry_time ).toString()
     @SuppressLint("SimpleDateFormat")
