@@ -14,7 +14,7 @@ import android.webkit.WebChromeClient
 import java.util.*
 import android.view.View
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_web.*
 import jp.japacom.unoh.ozm.R
 import jp.japacom.unoh.ozm.common.*
 import jp.japacom.unoh.ozm.model.Edit
@@ -22,13 +22,13 @@ import jp.japacom.unoh.ozm.model.EntryValue
 import jp.japacom.unoh.ozm.model.Setting
 import java.text.SimpleDateFormat
 
-class MainActivity : AppCompatActivity() {
+class WebActivity : AppCompatActivity() {
 
     var entry_value = EntryValue()
 
     internal inner class MyWebChromeClient : WebChromeClient() {
         override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
-            AlertDialog.Builder(this@MainActivity)
+            AlertDialog.Builder(this@WebActivity)
                 .setTitle("OZM")
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok,
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_web)
 
         var edit : Edit = Edit(this )
         edit.reset()
