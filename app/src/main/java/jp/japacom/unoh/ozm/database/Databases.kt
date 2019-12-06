@@ -6,17 +6,17 @@ import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
 @Database(entities = arrayOf(WorkTime::class) , version = 1)
-abstract class  WorkTimeDatabase : RoomDatabase() {
+abstract class  Databases : RoomDatabase() {
     abstract fun worktimeDao(): WorkTimeDAO
 
     companion object {
-        private var INSTANCE: WorkTimeDatabase? = null
+        private var INSTANCE: Databases? = null
 
-        fun getInstance(context: Context): WorkTimeDatabase? {
+        fun getInstance(context: Context): Databases? {
             if (INSTANCE == null) {
-                synchronized(WorkTimeDatabase::class) {
+                synchronized(Databases::class) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                        WorkTimeDatabase::class.java, "Databases.db")
+                        Databases::class.java, "Databases.db")
                         .build()
                 }
             }
