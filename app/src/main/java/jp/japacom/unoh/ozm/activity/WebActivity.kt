@@ -1,26 +1,23 @@
 package jp.japacom.unoh.ozm.activity
 
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.content.DialogInterface
 import android.content.Intent
+import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.webkit.JsResult
-import android.webkit.WebChromeClient
-import java.util.*
 import android.view.View
+import android.webkit.*
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_web.*
 import jp.japacom.unoh.ozm.R
-import jp.japacom.unoh.ozm.common.*
+import jp.japacom.unoh.ozm.common.stringToDate
 import jp.japacom.unoh.ozm.model.Edit
 import jp.japacom.unoh.ozm.model.EntryValue
 import jp.japacom.unoh.ozm.model.Setting
+import kotlinx.android.synthetic.main.activity_web.*
 import java.text.SimpleDateFormat
+import java.util.*
 
 class WebActivity : AppCompatActivity() {
 
@@ -50,12 +47,10 @@ class WebActivity : AppCompatActivity() {
             val fuseaction = url.substring((url.indexOf("fuseaction=") + 11) )
             if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
                 registration.visibility = View.GONE
-                editday.visibility = View.VISIBLE
                 holiday.visibility = View.GONE
                 edtibutton.show()
             }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
                 registration.visibility = View.VISIBLE
-                editday.visibility = View.GONE
                 holiday.visibility  = View.VISIBLE
                 edtibutton.hide()
             }
@@ -71,23 +66,18 @@ class WebActivity : AppCompatActivity() {
         var edit : Edit = Edit(this )
         edit.reset()
 
-        init()
-
         webView.webViewClient = MyWebViewClient()
         webView.webChromeClient = MyWebChromeClient()
         webView.settings.javaScriptEnabled = true
-        webView.loadUrl(TOP_URL)
+
+        val cookieManager: CookieManager = CookieManager.getInstance()
+        cookieManager.setAcceptCookie(true)
+        cookieManager.setAcceptThirdPartyCookies(webView, true)
+
+        init()
 
         registration.visibility = View.GONE
         holiday.visibility = View.GONE
-
-        /* 編集日付ボタン */
-        editday.setOnClickListener {
-            var edit_day = this.entry_value.editDay()
-            webView.loadUrl("javascript:DataEdit('$edit_day');")
-            progressBar2.visibility = View.VISIBLE
-            edtibutton.hide()
-        }
 
         /* 登録ボタン */
         registration.setOnClickListener {
@@ -136,28 +126,31 @@ class WebActivity : AppCompatActivity() {
 
     fun init(){
         var edit : Edit = Edit(this )
+
         var setting = Setting(this)
 
+        if( setting.load_url == ""){
+            Toast.makeText(this, "右上のメニューより読み込みページを設定してください。", Toast.LENGTH_LONG).show()
+            registration.visibility = View.GONE
+            holiday.visibility = View.GONE
+            edtibutton.hide()
+            return
+        }
+
+        webView.loadUrl(setting.load_url)
+
         if(!edit.edit_date.isEmpty() && !edit.entry_time.isEmpty() && !edit.exit_time.isEmpty() && !edit.project_code.isEmpty() ){
-            Toast.makeText(this , "入力値をロードします。", Toast.LENGTH_LONG).show()
+            //Toast.makeText(this , "入力値をロードします。", Toast.LENGTH_LONG).show()
             this.entry_value.date = SimpleDateFormat("yyyy/MM/dd").parse( edit.edit_date )
             this.entry_value.entry_time = stringToDate( this.entry_value.date, edit.entry_time )
             this.entry_value.exit_time  = stringToDate( this.entry_value.date, edit.exit_time )
             this.entry_value.project_code = edit.project_code
-        }else if(setting.entry_time.isEmpty() || setting.project_code.isEmpty()){
-            Toast.makeText(this , resources.getString(R.string.setting_notice), Toast.LENGTH_LONG).show()
-            this.entry_value.date = Date()
-            this.entry_value.entry_time = stringToDate( Date() , "08:30")
-            this.entry_value.exit_time  = Date()
-            this.entry_value.project_code = DEFALUT_PROJECT_CODE
-        }else{
-            this.entry_value.date = Date()
-            this.entry_value.entry_time = stringToDate( Date() , setting.entry_time)
-            this.entry_value.exit_time = Date()
-            this.entry_value.project_code = setting.project_code
-        }
 
-        editday.text = "登録日付へ (" + this.entry_value.editDate() + ") "
+            var edit_day = this.entry_value.editDay()
+            webView.loadUrl("javascript:DataEdit('$edit_day');")
+            progressBar2.visibility = View.VISIBLE
+            edtibutton.hide()
+        }
     }
 
     //メニュー表示の為の関数
@@ -174,7 +167,8 @@ class WebActivity : AppCompatActivity() {
             R.id.top -> {
                 var edit : Edit = Edit(this )
                 edit.reset()
-                webView.loadUrl(TOP_URL)
+                var setting = Setting(this)
+                webView.loadUrl(setting.load_url)
                 progressBar2.visibility = View.VISIBLE
                 true
             }
@@ -188,10 +182,5 @@ class WebActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
 
-    }
-
-    companion object{
-        const val TOP_URL : String = "https://ozo.japacom.jp/ozo/default.cfm?version=ozojcs&app_cd=229&fuseaction=knt"
-        const val DEFALUT_PROJECT_CODE = "38300012-00"
     }
 }
