@@ -6,11 +6,14 @@
     <string name="top">最初の画面</string>
     <string name="entrytime">出社時間</string>
     <string name="pcode">プロジェクトコード</string>
+    <string name="load_url">読み込みページ</string>
     <string name="temporary">一時変更</string>
     <string name="holiday">休暇登録</string>
-    <string name="editday">登録日付へ</string>
-    <string name="setting_notice">右上設定より出社時間とプロジェクトコードを設定してください。</string>
+    <string name="editday">右下の編集ボタンより勤務時間を登録してください。</string>
+    <string name="setting_notice">右上のメニューの設定より出社時間とプロジェクトコードを設定してください。</string>
     <string name="exittime">退社時間</string>
-    <string name="next">登録画面へ</string>
+    <string name="registration_view">登録画面へ</string>
+    <string name="next">→</string>
+    <string name="back">←</string>
     <string name="entrydate">日付</string>
 </resources>

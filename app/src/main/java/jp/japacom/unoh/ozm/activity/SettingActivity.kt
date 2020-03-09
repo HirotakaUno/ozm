@@ -17,10 +17,12 @@ class SettingActivity : AppCompatActivity() {
         var setting = Setting(this)
         this.entrytime.setText(setting.entry_time,TextView.BufferType.NORMAL)
         this.pcode.setText(setting.project_code,TextView.BufferType.NORMAL )
+        this.load_url.setText(setting.load_url,TextView.BufferType.NORMAL )
 
         this.next.setOnClickListener {
             setting.entry_time = entrytime.text.toString()
             setting.project_code = pcode.text.toString()
+            setting.load_url = load_url.text.toString()
             setting.save()
             this.finish()
         }

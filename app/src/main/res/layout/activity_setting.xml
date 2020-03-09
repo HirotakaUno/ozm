@@ -35,6 +35,16 @@
                 android:inputType="phone"
                 android:ems="10"
                 android:id="@+id/pcode" android:hint="@string/pcode"/>
+        <TextView
+                android:text="@string/load_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView3" android:textSize="24sp"/>
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:ems="10"
+                android:id="@+id/load_url" android:hint="@string/load_url"/>
     </LinearLayout>
     <Button
             android:text="@string/save"
