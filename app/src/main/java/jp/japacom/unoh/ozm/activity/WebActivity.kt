@@ -22,6 +22,7 @@ import java.util.*
 class WebActivity : AppCompatActivity() {
 
     var entry_value = EntryValue()
+    var viewpage = "";
 
     internal inner class MyWebChromeClient : WebChromeClient() {
         override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
@@ -46,13 +47,28 @@ class WebActivity : AppCompatActivity() {
         override fun onPageFinished(view: WebView, url: String) {
             val fuseaction = url.substring((url.indexOf("fuseaction=") + 11) )
             if( Regex("knt").matches( fuseaction ) || Regex("knt_kinmu").matches( fuseaction ) ){
-                registration.visibility = View.GONE
-                holiday.visibility = View.GONE
                 edtibutton.show()
+                viewpage = "knt";
             }else if( Regex("knt_kinmuinput").matches( fuseaction ) ){
-                registration.visibility = View.VISIBLE
-                holiday.visibility  = View.VISIBLE
                 edtibutton.hide()
+                viewpage = "knt_kinmuinput";
+
+                var edit : Edit = Edit( baseContext )
+                var entry_time = entry_value.entryTime()
+                var exit_time = entry_value.exitTime()
+                var work_time = entry_value.workTime()
+                var project_code = entry_value.project_code
+
+                webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('$entry_time');")
+                webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('$exit_time');")
+                webView.loadUrl("javascript:jQuery('#db_ZANGYOU_JIKAN5').val('$work_time');")
+                webView.loadUrl("javascript:jQuery('#db_SOU_ROUDOU').val('$work_time');")
+                webView.loadUrl("javascript:jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)' ).val('$project_code');")
+                webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
+                webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$work_time');")
+                webView.loadUrl("javascript:AsyncAutoCalc(true);")
+                progressBar2.visibility = View.VISIBLE
+                edit.reset()
             }
             progressBar2.visibility = View.INVISIBLE
             super.onPageFinished(view, url)
@@ -76,41 +92,38 @@ class WebActivity : AppCompatActivity() {
 
         init()
 
-        registration.visibility = View.GONE
-        holiday.visibility = View.GONE
-
         /* 登録ボタン */
-        registration.setOnClickListener {
-            var entry_time = this.entry_value.entryTime()
-            var exit_time = this.entry_value.exitTime()
-            var work_time = this.entry_value.workTime()
-            var project_code = this.entry_value.project_code
-
-            webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('$entry_time');")
-            webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('$exit_time');")
-            webView.loadUrl("javascript:jQuery('#db_ZANGYOU_JIKAN5').val('$work_time');")
-            webView.loadUrl("javascript:jQuery('#db_SOU_ROUDOU').val('$work_time');")
-            webView.loadUrl("javascript:jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)' ).val('$project_code');")
-            webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
-            webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$work_time');")
-            webView.loadUrl("javascript:AsyncAutoCalc(true);")
-            progressBar2.visibility = View.VISIBLE
-            edit.reset()
-        }
+//        registration.setOnClickListener {
+//            var entry_time = this.entry_value.entryTime()
+//            var exit_time = this.entry_value.exitTime()
+//            var work_time = this.entry_value.workTime()
+//            var project_code = this.entry_value.project_code
+//
+//            webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('$entry_time');")
+//            webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('$exit_time');")
+//            webView.loadUrl("javascript:jQuery('#db_ZANGYOU_JIKAN5').val('$work_time');")
+//            webView.loadUrl("javascript:jQuery('#db_SOU_ROUDOU').val('$work_time');")
+//            webView.loadUrl("javascript:jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)' ).val('$project_code');")
+//            webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
+//            webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('$work_time');")
+//            webView.loadUrl("javascript:AsyncAutoCalc(true);")
+//            progressBar2.visibility = View.VISIBLE
+//            edit.reset()
+//        }
 
         /* 休暇登録ボタン */
-        holiday.setOnClickListener {
-            webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('');")
-            webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('');")
-            webView.loadUrl("javascript:jQuery('#tmp_JIYUU_SYUJITU').val('2');")
-            webView.loadUrl("javascript:updateDisplay(jQuery('#tmp_JIYUU_SYUJITU').get(0) );")
-            webView.loadUrl("javascript:jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)' ).val('38300003-00');")
-            webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
-            webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('08:00');")
-            webView.loadUrl("javascript:AsyncAutoCalc(true);")
-            progressBar2.visibility = View.VISIBLE
-            edit.reset()
-        }
+//        holiday.setOnClickListener {
+//            webView.loadUrl("javascript:jQuery('#db_SYUKKIN_JIKOKU1').val('');")
+//            webView.loadUrl("javascript:jQuery('#db_TAISYUTU_JIKOKU1').val('');")
+//            webView.loadUrl("javascript:jQuery('#tmp_JIYUU_SYUJITU').val('2');")
+//            webView.loadUrl("javascript:updateDisplay(jQuery('#tmp_JIYUU_SYUJITU').get(0) );")
+//            webView.loadUrl("javascript:jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)' ).val('38300003-00');")
+//            webView.loadUrl("javascript:onBlur_ProjectCode( jQuery('#tbody_01 #tr_1 input[type=\"text\"]:eq(0)').get(0) );")
+//            webView.loadUrl("javascript:jQuery('input[name=\"db_WORK_TIME\"]:eq(1)' ).val('08:00');")
+//            webView.loadUrl("javascript:AsyncAutoCalc(true);")
+//            progressBar2.visibility = View.VISIBLE
+//            edit.reset()
+//        }
 
         edtibutton.setOnClickListener {
             val intent: Intent = Intent(this, EditActivity::class.java)
@@ -131,8 +144,8 @@ class WebActivity : AppCompatActivity() {
 
         if( setting.load_url == ""){
             Toast.makeText(this, "右上のメニューより読み込みページを設定してください。", Toast.LENGTH_LONG).show()
-            registration.visibility = View.GONE
-            holiday.visibility = View.GONE
+//            registration.visibility = View.GONE
+//            holiday.visibility = View.GONE
             edtibutton.hide()
             return
         }
@@ -148,8 +161,8 @@ class WebActivity : AppCompatActivity() {
 
             var edit_day = this.entry_value.editDay()
             webView.loadUrl("javascript:DataEdit('$edit_day');")
-            progressBar2.visibility = View.VISIBLE
             edtibutton.hide()
+            progressBar2.visibility = View.VISIBLE
         }
     }
 
